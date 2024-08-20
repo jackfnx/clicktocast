@@ -1,0 +1,8 @@
+## Interface: 110002
+## Title: |ClickToCast|r v11.0.2
+## Notes: Right click to cast a spell, refer to the implementation in JSHB by _JS_
+## Version: v11.0.2.0
+## Author: sixue
+
+# MAIN
+clicktocast.lua
