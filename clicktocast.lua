@@ -2,13 +2,44 @@
 -- clicktocast - clickcast module
 --
 
-local L = LibStub("AceLocale-3.0"):GetLocale("clicktocast")
+clicktocast		= LibStub("AceAddon-3.0"):NewAddon("clicktocast", "AceEvent-3.0")
+clicktocast.F	= {}
+clicktocast.CLICK_TO_CAST_SPELL = 0
+
+
+function clicktocast:OnInitialize()
+	local _, _, cls = UnitClass("player")
+	if cls == 3 then -- only for hunter
+		clicktocast.CLICK_TO_CAST_SPELL = 34477
+	else
+		return
+	end
+	-- clicktocast tries to wait for all variables to be loaded before configuring itself.
+	clicktocast:RegisterEvent("VARIABLES_LOADED")
+end
+
+function clicktocast:VARIABLES_LOADED()
+	clicktocast:UnregisterEvent("VARIABLES_LOADED")
+	clicktocast.globalConfigs = {}
+	clicktocast.globalConfigs["MOD_CLICKTOCAST"] = clicktocast.Setup
+
+	clicktocast.ReconfigureClickToCast()
+end
+
+-- This is the reconfiguration function that gets called when ClickToCast needs to be globally reconfigured.
+function clicktocast.ReconfigureClickToCast()
+	local key, val
+	for key, val in pairs(clicktocast.globalConfigs) do
+		val()
+	end
+	--collectgarbage("collect")
+end
 
 function clicktocast.CanUseClicktocast(spell)
 	-- Check if they can use the spell, maybe they have not trained it...
-	local usable, _ = IsUsableSpell(spell)
-	if (not usable) then
-		if (select(1, GetSpellCooldown(spell) ) == 0) then
+	local spellExists = C_Spell.DoesSpellExist(spell)
+	if (not spellExists) then
+		if (select(1, C_Spell.GetSpellCooldown(spell)) == 0) then
 			return false
 		end
 	end
@@ -17,11 +48,8 @@ function clicktocast.CanUseClicktocast(spell)
 end
 
 function clicktocast.Setup()
-
-	local CLICK_TO_CAST_SPELL = 34477
-    local spellToCast = C_Spell.GetSpellInfo(CLICK_TO_CAST_SPELL)
+    local spellToCast = C_Spell.GetSpellName(clicktocast.CLICK_TO_CAST_SPELL)
 	clicktocast.macroStr = "/cast [@mouseover,exists,nounithasvehicleui,novehicleui] "..spellToCast
-
 
 	if InCombatLockdown() then
 		-- Be sure we don't register this event more than one time, ever!
@@ -34,7 +62,7 @@ function clicktocast.Setup()
 	end
 
 	-- Check they are proper level and have learned the spell, no point doing anything if they can't!
-	if (not clicktocast.CanUseClicktocast(CLICK_TO_CAST_SPELL) then return end
+	if not clicktocast.CanUseClicktocast(clicktocast.CLICK_TO_CAST_SPELL) then return end
 
 	-- Deconstruction
 	clicktocast:UnregisterEvent("PLAYER_REGEN_ENABLED")
@@ -90,7 +118,7 @@ function clicktocast.Setup()
 	clicktocast.clicktocastFrames = {}
 
 --[[
--- AUTHOR NOTE TO OTHER AUTHORS: If you add "<frame>.cmctc_unit" variable to a frame that should be clickable for ClickToCast spells,
+-- AUTHOR NOTE TO OTHER AUTHORS: If you add "<frame>.cmctc_unit" variable to a frame that should be clickable for clicktocast spells,
 -- this will make clicktocast easily pickup your frames with no guess work...
 --]]
     local frame = EnumerateFrames()

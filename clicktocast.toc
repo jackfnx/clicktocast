@@ -1,8 +1,17 @@
 ## Interface: 110002
-## Title: |ClickToCast|r v11.0.2
+## Title: ClickToCast|r v11.0.2
 ## Notes: Right click to cast a spell, refer to the implementation in JSHB by _JS_
 ## Version: v11.0.2.0
 ## Author: sixue
+## IconTexture: C_Spell.GetSpellTexture(34477)
+
+# LIBRARIES
+#@no-lib-strip@
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\AceAddon-3.0\AceAddon-3.0.xml
+libs\AceEvent-3.0\AceEvent-3.0.xml
+#@end-no-lib-strip@
 
 # MAIN
 clicktocast.lua
