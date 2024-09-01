@@ -9,8 +9,10 @@ clicktocast.CLICK_TO_CAST_SPELL = 0
 
 function clicktocast:OnInitialize()
 	local _, _, cls = UnitClass("player")
-	if cls == 3 then -- only for hunter
-		clicktocast.CLICK_TO_CAST_SPELL = 34477
+	if cls == 3 then -- hunter
+		clicktocast.CLICK_TO_CAST_SPELL = 34477		-- 误导
+	elseif cls == 4 then -- rogue
+		clicktocast.CLICK_TO_CAST_SPELL = 212155	-- 嫁祸
 	else
 		return
 	end
